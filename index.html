@@ -1,41 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-
-  </style>
-</head>
-
-<body>
-  <div class="area">
-    <div class="head" id="head" style="top:100px"></div>
-  </div>
-
-  <script>
-    const head = document.getElementById("head");
-    let positionLeft = 200;
-    function goRight() {
-      positionLeft += 20;
-      if (positionLeft > 780) {
-        positionLeft = 0;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake</title>
+    <style>
+      .area {
+        background-color: rgba(125, 159, 182, 0.667);
+        position: relative;
       }
-      render();
-    }
+      
+      .part {
+        width: 20px;
+        height: 20px;
+        background-color: rgb(19, 29, 223);
+        position: absolute;
+        border-radius: 5px;
+      }
+      .head {
+        width: 20px;
+        height: 20px;
+        background-color: rgb(19, 29, 223);
+        position: absolute;
+        border-radius: 5px;
+      }
+      .food {
+        width: 20px;
+        height: 20px;
+        background-color: rgb(43, 243, 66);
+        border-radius: 5px;
+        position: absolute;
+        top: 100px;
+        left: 100px;
+        background-image: 
+      }
+    </style>
+  </head>
 
-    function render() {
-      head.style.left = `${positionLeft}px`;
-      head.style.display = "block";
-    }
+  <body onKeyDown="handleKeydown(event);">
+    <div class="area" id="area">
+      <div class="food" id="food"></div>
+      <div class="head" id="head" style="top: 100px"></div>
+      <div id="body" style = >
+        <!-- <div class="part" style="top: 40px; left: 40px;"></div>
+        <div class="part" style="top: 40px; left: 40px;"></div>
+        <div class="part" style="top: 40px; left: 40px;"></div>   generated 188 lines --> 
+      </div>
+    </div>
+    <button onclick="changeDirection('up');">Up</button>
+    <button onclick="changeDirection('down');">Down</button>
+    <button onclick="changeDirection('left');">Left</button>
+    <button onclick="changeDirection('right');">Right</button>
+    <div id="score"></div>
 
-    function gameLoop() {
-      goRight();
-    }
-    setInterval(gameLoop, 500);
-  </script>
-</body>
+    <script>
+      const scale = 20;
+      const head = document.getElementById("head");
+      const part = document.getElementById("part");
+      const foodEl = document.getElementById("food");
 
+      const area = document.getElementById("area");
+
+      const areaWidth = 30;
+      const areaHeight = 26;
+
+      let positionX = 5;
+      let positionY = 5;
+      let score = 0; 
+
+      let bodyCoordinates =[
+        
+        {x:6, y:5},
+        {x:7, y:5},
+        {x:8, y:5},
+        {x:9, y:5},
+      ];
+
+      let food = {
+        x:5,
+        y:5,
+      }
+
+      // keydown
+      function handleKeydown(event) {
+        console.log(event.key);
+        switch (event.key) {
+          case "ArrowUp":
+            changeDirection("up");
+            break;
+          case "ArrowDown":
+            changeDirection("down");
+            break;
+          case "ArrowLeft":
+            changeDirection("left");
+            break;
+          case "ArrowRight":
+            changeDirection("right");
+            break;
+        }
+      }
+      // neg chigleld onclick shuud yvuulah
+      let direction = "right"; //top, left, down, up
+
+      //reset game
+      function resetGame() {
+        score = 0;
+        area.style.width = `${areaWidth * scale}px`;
+        area.style.height = `${areaHeight * scale}px`;
+        bodyCoordinates = [
+        {x:6, y:5},
+        {x:7, y:5},
+        {x:8, y:5},
+        {x:9, y:5},
+        ];
+          direction = "right";
+          positionX = 10;
+          positionY = 5;
+          generateFood ();
+     
+      }
+ 
+
+    // food randomly generate 
+      function generateFood () {
+        // const foodX = Math.floor (Math.random() * areaWidth);
+        food.x =  Math.floor (Math.random() * areaWidth);
+        food.y =  Math.floor (Math.random() * areaHeight);
+        foodEl.style.top = `${food.y * scale}px`;
+        foodEl.style.left = `${food.x * scale}px`;
+        
+      }
+      function changeDirection(value) {
+        if (direction === "left" || direction === "right") {
+          if (value === "up" || value === "down") {
+            direction = value;
+          }
+        } else if (direction === "down" || direction === "up") {
+          if (value === "right" || value === "left") {
+            direction = value;
+          }
+        }
+      }
+  
+
+      // right
+      function goRight() {
+        positionX += 1;
+        if (positionX > areaWidth - 1) {
+          positionX = 0;
+        }
+      }
+
+      // left
+      function goLeft() {
+        positionX -= 1;
+        if ((positionX < 0)) {
+          positionX = areaWidth - 1;
+        }
+      }
+
+      // down
+      function goDown() {
+        positionY += 1;
+        if (positionY > areaHeight - 1) {
+          positionY = 0;
+        }
+      }
+
+      //up
+      function goUp() {
+        positionY -= 1;
+        if ((positionY < 0)) {
+          positionY = areaHeight - 1;
+        }
+      }
+
+
+    // body-g hevleh 
+
+    const bodyContainer = document.getElementById("body");
+
+  // render function
+      function render() {
+        if (food.x === positionX && food.y === positionY) {
+        console.log ("Swallowed food");
+        bodyCoordinates.unshift(bodyCoordinates[0]);
+        generateFood ();
+        score += 1;
+        speed = speed - 1;
+       
+  ///////////////  
+        clearInterval(interval);
+        console.log ({speed});
+        interval = setInterval(gameLoop, speed);
+
+        document.getElementById("score").innerText = score;
+        }
+        head.style.left = `${positionX * scale}px`;
+        head.style.top = `${positionY * scale}px`;
+
+        let bodyHtml = "";
+      
+        for (let i = 0; i<bodyCoordinates.length; i++){
+          bodyHtml += `<div class="part" style="top: ${bodyCoordinates[i].y * scale}px; left: ${bodyCoordinates[i].x * scale}px ;"></div>`;
+        }
+        bodyContainer.innerHTML = bodyHtml;
+      }
+
+      //gameloop
+      function gameLoop() {
+        switch (direction) {
+          case "up":
+            goUp();
+            break;
+          case "down":
+            goDown();
+            break;
+          case "right":
+            goRight();
+            break;
+          case "left":
+            goLeft();
+            break;
+        }
+
+        for (let i = 0; i < bodyCoordinates.length; i++) {
+          if (positionX === bodyCoordinates[i].x && positionY === bodyCoordinates[i].y) {
+            gameOver();
+            break;
+          }
+          }
+        bodyCoordinates.push({x:positionX, y:positionY})
+        bodyCoordinates.shift();
+        render();
+      }
+
+      function gameOver() {
+        alert ("Game Over!!!");
+        resetGame();
+      }
+      // horig tavij uguh
+
+      resetGame();
+      let speed = 100;
+
+      setInterval(gameLoop, speed);
+    </script>
+  </body>
 </html>
